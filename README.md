@@ -2,32 +2,65 @@
 
 ## Description
 
-The Ethiopian Date Converter is a Javascript Libarary designed to convert dates from the Gregorian calendar to the Ethiopian calendar. It provides accurate conversions by considering leap years and the specific start of the Ethiopian New Year. The application offers functionalities to convert dates into both short and long Ethiopian date formats.
+Welcome to the Ethiopian Date Converter library! This library is designed to help developers convert dates from the Gregorian calendar to the Ethiopian calendar, providing both long and short format conversions. It includes support for Geez numerals and is suitable for applications requiring detailed Ethiopian date representations.
 
 ## Features
 
-- Convert Gregorian dates to Ethiopian dates.
-- Convert Ethiopian dates to Gregorian dates.
-- Support Geez formats.
-- Support for short (dd/MM/yyyy) and long date formats, including day names and month names.
-- Consideration of leap years in both calendars for accurate date conversion.
+- **Convert to Geez Long Format**: Converts Gregorian dates to a long Ethiopian format with day names, using Geez numerals for day and year.
+- **Convert to Short Format**: Provides a simple day/month/year format for Ethiopian dates.
+- **Support for Leap Years**: Accurately handles conversions around Ethiopian and Gregorian leap years.
+- **Localization Ready**: Designed to be easily integrated into internationalized applications.
+
+## Installation
+
+This library is available through npm. To install, run the following command in your project directory:
+
+```bash
+npm install ethiopian-date-converter
+```
 
 ## Usage
 
-To use the Ethiopian Date Converter, include the `EthiopianDateConverter.cs` class in your C# project. You can convert dates using the following methods:
+### Importing the Library
 
-- `ConvertToEthiopianShort(DateTime gregorianDate)` for short date format.
-- `ConvertToEthiopianLong(DateTime gregorianDate)` for long date format with month and day names.
-- `convertToEthiopianLongWithGeez(DateTime gregorianDate)`for Geez format including years
-- `convertFromEthiopianToGregorian(DateTime ethiopianDate)` for converting Georgian Calendar to Ethiopian Calendar
+Before using the conversion functions, import them into your project:
 
-Example:
 ```javascript
-const today = new Date();
-console.log("Short Format:", convertToEthiopianShort(today));
-console.log("Long Format:", convertToEthiopianLong(today));
-console.log("Geez Format:", convertToEthiopianLongWithGeez(today));
-console.log("Convert Dates between Georgian to Ethiopian Calendar:", convertFromEthiopianToGregorian(today));
+import { toEthiopianGeezLongDate, toEthiopianShortDate } from 'ethiopian-date-converter';
+```
+
+### Converting Dates to Ethiopian Calendar
+
+#### Long Format with Geez Numerals
+
+Convert a Gregorian date to the Ethiopian calendar in a detailed format that includes the day of the week, the day in Geez numerals, the month name, and the year in Geez numerals.
+
+```javascript
+const gregorianDate = new Date(Date.UTC(2024, 3, 22));  // April 22, 2024
+const ethiopianGeezLong = toEthiopianGeezLongDate(gregorianDate);
+console.log(ethiopianGeezLong);  // Example Output: "ረቡዕ, ፲፬ ሚይዚያ ፳፻፲፰"
+```
+
+#### Short Numeric Format
+
+For simpler applications, convert a Gregorian date to a short Ethiopian date format showing just the day, month, and year.
+
+```javascript
+const ethiopianShort = toEthiopianShortDate(gregorianDate);
+console.log(ethiopianShort);  // Outputs: "14/8/2016"
+```
+
+## Configuration
+
+No additional configuration is required to start using this library. However, you can customize the logger or error handling as needed to fit your application's architecture.
+
+## Contributing
+
+Contributions to the Ethiopian Date Converter are welcome! Please refer to the contributing guidelines in the repository for more details on submitting pull requests, reporting bugs, or requesting new features.
+
+## Support and Contact
+
+For support requests, feature suggestions, or any queries, please contact [tesfaytadesse80@gmail.com] or raise an issue in the repository on GitHub.
 
 ## License
 
