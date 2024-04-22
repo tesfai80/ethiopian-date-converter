@@ -1,44 +1,59 @@
-function getEthiopianDate(gregorianDate) {
-    // Constants for calculating the Ethiopian New Year in Gregorian dates
-    const offsetYears = 7;
-    const newYearMonth = 9; // Ethiopian New Year is in September
-    let newYearDay = isGregorianLeapYear(gregorianDate.getFullYear() - 1) ? 12 : 11;
-    // Determine the Ethiopian year
-    let ethiopianYear = gregorianDate.getFullYear() - offsetYears;
-    // Adjusting Ethiopian year based on whether the date is before or after the Ethiopian New Year
-    if (gregorianDate.getMonth() + 1 < newYearMonth || 
-       (gregorianDate.getMonth() + 1 === newYearMonth && gregorianDate.getDate() < newYearDay)) {
+function getEthiopianDate(gregorianYear, gregorianMonth, gregorianDay) {
+    const offsetYears = 8; // Typically, Ethiopian year is 7 or 8 years behind the Gregorian year, depending on the current date.
+    const newYearMonth = 9; // Ethiopian New Year starts in September.
+    const newYearDay = isGregorianLeapYear(gregorianYear - 1) ? 12 : 11; // Ethiopian New Year falls on September 12 if the previous Gregorian year was a leap year, otherwise on September 11.
+
+    // Create a Gregorian date object for the input date.
+    let gregorianDate = new Date(Date.UTC(gregorianYear, gregorianMonth - 1, gregorianDay));
+
+    // Determine the Gregorian date for the start of the current Ethiopian year.
+    let currentEthiopianNewYear = new Date(Date.UTC(gregorianYear, newYearMonth - 1, newYearDay));
+
+    // Start calculating the Ethiopian year.
+    let ethiopianYear = gregorianYear - offsetYears;
+
+    // If today's date is before this year's Ethiopian New Year, subtract one year.
+    if (gregorianDate < currentEthiopianNewYear&& gregorianMonth <= newYearMonth && gregorianDay < newYearDay) {
         ethiopianYear -= 1;
     }
 
-    // Calculate the difference in days from the Ethiopian New Year
-    let ethiopianNewYear = new Date(gregorianDate.getFullYear(), newYearMonth - 1, newYearDay);
-    if (gregorianDate < ethiopianNewYear) {
-        ethiopianNewYear.setFullYear(ethiopianNewYear.getFullYear() - 1);
-    }
-    const differenceInDays = Math.floor((gregorianDate - ethiopianNewYear) / (1000 * 60 * 60 * 24));
-    let totalDaysSinceNewYear = differenceInDays ; // Including the current day
+    // Calculate the difference in days from the last Ethiopian New Year.
+    let lastEthiopianNewYear = new Date(Date.UTC(gregorianYear - 1, newYearMonth - 1, newYearDay));
+    const differenceInDays = Math.floor((gregorianDate - lastEthiopianNewYear) / (1000 * 60 * 60 * 24));
 
-   // Convert the difference into Ethiopian months and days
-   const ethiopianMonth = Math.floor(totalDaysSinceNewYear / 30) + 1;
-   const ethiopianDay = (totalDaysSinceNewYear % 30) === 0 ? 30 : totalDaysSinceNewYear % 30;
+    // Calculate the Ethiopian month and day.
+    let ethiopianMonth = Math.floor(differenceInDays / 30) + 1;
+    // let ethiopianDay = differenceInDays % 30 + 1;
+    let ethiopianDay = differenceInDays % 30 ;
 
-   return { ethiopianYear, ethiopianMonth, ethiopianDay };
+    return { ethiopianYear, ethiopianMonth, ethiopianDay };
 }
-function convertFromEthiopianToGregorian(ethiopianYear, ethiopianMonth, ethiopianDay) {
-    const offsetYears = 8;
-    const newYearMonth = 9; // Ethiopian New Year in Gregorian Calendar is September
-    const baseGregorianYear = ethiopianYear + offsetYears;
-    let gregorianNewYearDay = isGregorianLeapYear(baseGregorianYear) ? 12 : 11;
-    
-    // Calculate the Gregorian date for Meskerem 1 (Ethiopian New Year)
-    let gregorianNewYear = new Date(baseGregorianYear, newYearMonth - 1, gregorianNewYearDay);
-    
-    // Ethiopian months have 30 days each. Pagumē (the 13th month) is not accounted for in this calculation.
-    let daysFromEthiopianNewYear = (ethiopianMonth - 1) * 30 + (ethiopianDay - 1);
-    gregorianNewYear.setDate(gregorianNewYear.getDate() + daysFromEthiopianNewYear);
-    
-    return gregorianNewYear;
+
+function convertEthiopianToGregorian(ethiopianYear, ethiopianMonth, ethiopianDay) {
+    const offsetYears = 8;  // Offset between the Ethiopian and Gregorian calendars
+    const newYearMonth = 9;  // Ethiopian New Year starts in September
+    let gregorianYear = ethiopianYear + offsetYears;  // Initial conversion of year
+
+    // Check if the provided Ethiopian date is before the New Year in September
+    if (ethiopianMonth < newYearMonth || (ethiopianMonth === newYearMonth && ethiopianDay < 11)) {
+        // If the date is before September 11, adjust the Gregorian year by subtracting one
+        gregorianYear--;
+    }
+
+    // Determine if the starting year is a Gregorian leap year to set the correct New Year day
+    let newYearDay = isGregorianLeapYear(gregorianYear) ? 12 : 11;
+
+    // Calculate the start of the Ethiopian New Year in Gregorian dates
+    let gregorianNewYearDate = new Date(Date.UTC(gregorianYear, newYearMonth - 1, newYearDay));
+
+    // Calculate days from the start of the Ethiopian year
+    //let daysFromNewYear = ((ethiopianMonth - 1) * 30 + ethiopianDay-1 );
+    let daysFromNewYear = ((ethiopianMonth - 1) * 30 + ethiopianDay );
+
+    // Adding the total number of days to the Gregorian New Year date
+    gregorianNewYearDate.setUTCDate(gregorianNewYearDate.getUTCDate() + daysFromNewYear);
+
+    return gregorianNewYearDate;
 }
 function isGregorianLeapYear(year) {
     return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
@@ -53,28 +68,28 @@ function toGeezNumber(number) {
     
     let result = "";
 
-    // Thousands
+    // Handle thousands
     if (number >= 1000) {
         let thousands = Math.floor(number / 1000);
-        result += (thousands === 1 ? "" : geezDigits[thousands - 1]) + "፻፻"; // 1,000 is represented as ፻፻ in Ge'ez
+        result += (thousands === 1 ? "" : geezDigits[thousands - 1]) + "፻፻"; // 1,000 is represented as "፻፻" in Ge'ez
         number %= 1000;
     }
 
-    // Hundreds
+    // Handle hundreds
     if (number >= 100) {
         let hundreds = Math.floor(number / 100);
-        result += (hundreds === 1 ? "" : geezDigits[hundreds - 1]) + geezHundreds[0];
+        result += (hundreds === 1 ? "" : geezDigits[hundreds - 1]) + "፻";
         number %= 100;
     }
 
-    // Tens
+    // Handle tens
     if (number >= 10) {
         let tens = Math.floor(number / 10);
-        result += (tens === 1 ? "" : geezTens[tens - 1]);
+        result += geezTens[tens - 1]; // Corrected to use the index directly for tens
         number %= 10;
     }
 
-    // Units
+    // Handle units
     if (number > 0) {
         result += geezDigits[number - 1];
     }
@@ -82,26 +97,26 @@ function toGeezNumber(number) {
     return result;
 }
 
-function convertToEthiopianLongWithGeez(gregorianDate) {
+function toEthiopianGeezLong(gregorianYear, gregorianMonth, gregorianDay) {
     const ethiopianMonths = ["መስከረም", "ጥቅምት", "ህዳር", "ታህሳስ", "ጥር", "የካቲት", "መጋቢት", "ሚይዚያ", "ግንቦት", "ሰኔ", "ሐምሌ", "ነሐሴ", "ጳጉሜ"];
-    const { ethiopianYear, ethiopianMonth, ethiopianDay } = getEthiopianDate(gregorianDate);
+    const { ethiopianYear, ethiopianMonth, ethiopianDay } = getEthiopianDate(gregorianYear, gregorianMonth, gregorianDay);
 
-    const dayInGeez = toGeezNumber(ethiopianDay);
-    const yearInGeez = toGeezNumber(ethiopianYear);
-    const monthName = ethiopianMonths[ethiopianMonth - 1];
+    const day = ethiopianDay;
+    const year = ethiopianYear;
+    const monthName = ethiopianMonths[ethiopianMonth-1];
 
-    return `${dayInGeez} ${monthName} ${yearInGeez}`;
+    return `${day} ${monthName} ${year}`;
 }
 
-function convertToEthiopianShort(gregorianDate) {
-    const { ethiopianYear, ethiopianMonth, ethiopianDay } = getEthiopianDate(gregorianDate);
+function toEthiopianShortDate(ethYear, ethMonth, ethnDay) {
+    const { ethiopianYear, ethiopianMonth, ethiopianDay } = getEthiopianDate(ethYear, ethMonth, ethnDay);
     return `${ethiopianDay}/${ethiopianMonth}/${ethiopianYear}`;
 }
 
-function convertToEthiopianLong(gregorianDate) {
+function toGeezDate(gregorianYear, gregorianMonth, gregorianDay) {
     const ethiopianMonths = ["መስከረም", "ጥቅምት", "ህዳር", "ታህሳስ", "ጥር", "የካቲት", "መጋቢት", "ሚይዚያ", "ግንቦት", "ሰኔ", "ሐምሌ", "ነሐሴ", "ጳጉሜ"];
     const ethiopianDays = ["እሁድ", "ሰኞ", "ማክሰኞ", "ረቡዕ", "ሐሙስ", "ዓርብ", "ቅዳሜ", "እሁድ"]; // Note: The week starts on Sunday
-    const { ethiopianYear, ethiopianMonth, ethiopianDay } = getEthiopianDate(gregorianDate);
+    const { ethiopianYear, ethiopianMonth, ethiopianDay } = getEthiopianDate(ethYear, ethMonth, ethnDay);
 
     // Determine the day of the week for the given Gregorian date
     const dayOfWeek = gregorianDate.getDay();
@@ -113,4 +128,4 @@ function convertToEthiopianLong(gregorianDate) {
     return `${dayName}, ${ethiopianDay} ${monthName} ${ethiopianYear}`;
 }
 
-export { convertToEthiopianShort, convertToEthiopianLong ,convertToEthiopianLongWithGeez,convertFromEthiopianToGregorian};
+export { toEthiopianShortDate, toGeezDate ,toEthiopianGeezLong,convertEthiopianToGregorian,toGeezNumber,getEthiopianDate};
