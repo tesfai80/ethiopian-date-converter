@@ -132,7 +132,7 @@ function toGeezDate(gregorianYear, gregorianMonth, gregorianDay) {
     // Determine the day of the week for the given Gregorian date
     const dayOfWeek = gregorianDay;
     // Ethiopian day name is selected based on the Gregorian day of the week
-    const dayName = ethiopianDays[dayOfWeek % 7];
+    const dayName = ethiopianDays[dayOfWeek % 6];
 
     // Select the Ethiopian month name based on the calculated month
     const monthName = ethiopianMonths[ethiopianMonth - 1];
@@ -173,15 +173,15 @@ const ethiopianCalendar = {
     }).replace(' ', '-');
 
     const ethiopianHolidays = [
-        { date: '02-Mar', englishName: 'Adwa Victory Day', amharicName: 'የዓድዋ ድል በዓል', notes: 'Commemorates Ethiopians victory over Italy at Battle of Adwa in 1896.' },
-        { date: '01-May', englishName: 'International Workers Day', amharicName: 'ዓለም አቀፍ የሠራተኞች ቀን', notes: '' },
+        { date: '02-Mar', englishName: 'Adwa Victory Day', amharicName: 'የዓድዋ ድል በዓል',link:'https://en.wikipedia.org/wiki/Adwa_Victory_Day', notes: 'Commemorates Ethiopians victory over Italy at Battle of Adwa in 1896.' },
+        { date: '01-May', englishName: 'International Workers Day', amharicName: 'ዓለም አቀፍ የሠራተኞች ቀን',link:'', notes: '' },
         { date: '05-May', englishName: 'Ethiopian Patriots Victory Day', amharicName: 'የአርበኞች ቀን', notes: 'Commemorates the 1941 entering of Emperor Haile Selassie into Addis Ababa amidst Second World War.' },
-        { date: '28-May', englishName: 'Downfall of the Derg', amharicName: 'ደርግ የወደቀበት ቀን', notes: 'Commemorates the end of the Derg junta in 1991.' },
-        { date: '11-Sep', englishName: 'Enkutatash', amharicName: 'እንቁጣጣሽ', notes: 'New Year of Ethiopia and Eritrea' },
-        { date: '26-Oct', englishName: 'Defense Day', amharicName: 'የመከላከያ ቀን', notes: 'Commemorating the formation of the Ethiopian National Defense Force in 1907' },
+        { date: '28-May', englishName: 'Downfall of the Derg', amharicName: 'ደርግ የወደቀበት ቀን',link:'https://en.wikipedia.org/wiki/Fall_of_the_Derg_regime', notes: 'Commemorates the end of the Derg junta in 1991.' },
+        { date: '11-Sep', englishName: 'Enkutatash', amharicName: 'እንቁጣጣሽ',link:'https://en.wikipedia.org/wiki/Enkutatash', notes: 'New Year of Ethiopia and Eritrea' },
+        { date: '26-Oct', englishName: 'Defense Day', amharicName: 'የመከላከያ ቀን',link:'https://en.wikipedia.org/wiki/Defense_Day_(Ethiopia)', notes: 'Commemorating the formation of the Ethiopian National Defense Force in 1907' },
         { date: '07-Jan', englishName: 'Ethiopian Christmas', amharicName: 'ገና', notes: '' },
         { date: '19-Jan', englishName: 'Epiphany', amharicName: 'ብርሐነ ጥምቀት', notes: 'Celebrated on January 19th, marks the Ethiopian Orthodox Epiphany.' },
-        { date: '27-Sep', englishName: 'Meskel', amharicName: 'መስቀል', notes: '' },
+        { date: '27-Sep', englishName: 'Meskel', amharicName: 'መስቀል',link:'https://en.wikipedia.org/wiki/Meskel', notes: '' },
         { date: '05-May', englishName: 'Easter', amharicName: 'ፋሲካ', notes: 'Commemorating the resurrection of Jesus Christ.' },
     ];
 
@@ -191,7 +191,7 @@ const ethiopianCalendar = {
         const monthIndex = new Date(`${month} 1, 2022`).getMonth(); // To convert month name to month index
         const dateThisYear = new Date(today.getFullYear(), monthIndex, day);
         if (dateThisYear < today) {
-            dateThisYear.setFullYear(today.getFullYear() + 1); // If it's past this year, set it for the next year
+            dateThisYear.setFullYear(today.getFullYear() + 1); 
         }
         return {...holiday, date: dateThisYear};
     });
